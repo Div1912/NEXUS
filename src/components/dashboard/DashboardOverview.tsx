@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useNexus } from '@/contexts/NexusContext';
 import { getKPIs, getCausalEvents, getModules } from '@/services/mockData';
 import KPICard from './KPICard';
@@ -15,6 +16,24 @@ const DashboardOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-xl font-bold text-foreground">Command Center</h2>
+          <p className="text-xs text-muted-foreground">Real-time campus intelligence</p>
+        </div>
+        {simulationActive && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex items-center gap-2 bg-nexus-alert/10 border border-nexus-alert/30 rounded-lg px-3 py-1.5"
+          >
+            <span className="w-2 h-2 rounded-full bg-nexus-alert animate-pulse-glow" />
+            <span className="text-xs font-mono text-nexus-alert">SIMULATION ACTIVE</span>
+          </motion.div>
+        )}
+      </motion.div>
+
       {/* Row 1 — KPIs */}
       <div className={`grid gap-4 ${presentationMode ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'}`}>
         {kpis.map((k, i) => (
@@ -36,10 +55,13 @@ const DashboardOverview: React.FC = () => {
 
       {/* Row 3 — Module Cards */}
       {!presentationMode && (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-          {modules.map((m, i) => (
-            <ModuleCard key={m.id} module={m} index={i} />
-          ))}
+        <div>
+          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Active Modules</div>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+            {modules.map((m, i) => (
+              <ModuleCard key={m.id} module={m} index={i} />
+            ))}
+          </div>
         </div>
       )}
 

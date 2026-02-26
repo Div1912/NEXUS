@@ -5,7 +5,6 @@ import NeuralMesh from './NeuralMesh';
 import StatCounter from './StatCounter';
 import CampusVisualization from './CampusVisualization';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 const HeroLanding: React.FC = () => {
   const navigate = useNavigate();
@@ -14,19 +13,17 @@ const HeroLanding: React.FC = () => {
     <div className="relative min-h-screen flex items-center overflow-hidden bg-background">
       <NeuralMesh />
 
+      {/* Radial glow accents */}
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/5 blur-[100px] pointer-events-none" />
+
       <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col lg:flex-row items-center gap-16">
         {/* Left Content */}
         <div className="flex-1 max-w-2xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <Badge variant="outline" className="mb-6 border-nexus-cyan/30 text-nexus-cyan text-xs uppercase tracking-widest px-4 py-1.5 rounded-full">
-              AMD Slingshot 2026 | Smart Cities PS
-            </Badge>
-          </motion.div>
-
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.7 }}
             className="font-display text-5xl md:text-7xl font-extrabold leading-[1.05] mb-6"
           >
             The Campus
@@ -37,19 +34,17 @@ const HeroLanding: React.FC = () => {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             className="text-muted-foreground text-lg max-w-xl mb-10 leading-relaxed"
           >
-            NEXUS OS is the world's first Causal AI Operating System for campus
-            infrastructure — running entirely at the edge on AMD silicon. Zero cloud.
-            Sub-5ms response.
+            Causal AI for campus infrastructure — edge-native, sub-5ms response.
           </motion.p>
 
           {/* Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.4 }}
             className="flex gap-8 mb-10 flex-wrap"
           >
             <StatCounter value="< 5" label="ms Latency" delay={600} />
@@ -62,7 +57,7 @@ const HeroLanding: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
             className="flex gap-4 flex-wrap"
           >
             <Button
