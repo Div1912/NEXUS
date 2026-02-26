@@ -11,7 +11,7 @@ const NeuralMesh: React.FC = () => {
 
     let animId: number;
     const nodes: { x: number; y: number; vx: number; vy: number }[] = [];
-    const NODE_COUNT = 70;
+    const NODE_COUNT = 120;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -24,8 +24,8 @@ const NeuralMesh: React.FC = () => {
       nodes.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
       });
     }
 
@@ -38,12 +38,12 @@ const NeuralMesh: React.FC = () => {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 180) {
+          if (dist < 200) {
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(0, 229, 255, ${0.04 * (1 - dist / 180)})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(0, 229, 255, ${0.12 * (1 - dist / 200)})`;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
           }
         }
@@ -52,8 +52,8 @@ const NeuralMesh: React.FC = () => {
       // Draw nodes
       for (const node of nodes) {
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.15)';
+        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
         ctx.fill();
 
         node.x += node.vx;
@@ -76,7 +76,7 @@ const NeuralMesh: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.85 }}
     />
   );
 };
