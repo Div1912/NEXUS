@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
+import { useNexus } from '@/contexts/NexusContext';
 
 const settingSections = [
   {
     title: 'System',
     items: [
-      { key: 'darkMode', label: 'Dark Mode', desc: 'Use dark theme across the interface', default: true },
+      { key: 'darkMode', label: 'Dark Mode', desc: 'Deep navy theme across the interface', default: true },
       { key: 'animations', label: 'Animations', desc: 'Enable UI animations and transitions', default: true },
       { key: 'sounds', label: 'Alert Sounds', desc: 'Play sounds on critical alerts', default: false },
     ],
@@ -30,37 +30,77 @@ const settingSections = [
 ];
 
 const Settings: React.FC = () => {
+  const { simulationActive, toggleSimulation, presentationMode, togglePresentation } = useNexus();
   const [values, setValues] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     settingSections.forEach(s => s.items.forEach(i => { init[i.key] = i.default; }));
     return init;
   });
+  const [saved, setSaved] = useState(false);
+
+  const handleToggle = (key: string, val: boolean) => {
+    setValues(prev => ({ ...prev, [key]: val }));
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="font-display text-2xl font-bold text-foreground">
-        Settings
-      </motion.h1>
+    <div className="space-y-6 max-w-3xl">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="font-display text-xl font-bold text-foreground tracking-wide">Settings</h1>
+        <p className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">System Configuration</p>
+      </motion.div>
+
+      {/* Runtime Controls */}
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass-panel p-5">
+        <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Runtime Controls</div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm font-medium text-foreground">Simulation Mode</div>
+              <div className="text-[10px] text-muted-foreground font-mono">Trigger 500-person mass ingress event</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {simulationActive && <span className="font-mono text-[9px] text-nexus-alert animate-pulse-glow">ACTIVE</span>}
+              <Switch checked={simulationActive} onCheckedChange={toggleSimulation} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm font-medium text-foreground">Presentation Mode</div>
+              <div className="text-[10px] text-muted-foreground font-mono">Cinematic layout for live demos (shortcut: P key)</div>
+            </div>
+            <div className="flex items-center gap-2">
+              {presentationMode && <span className="font-mono text-[9px] text-accent">ON</span>}
+              <Switch checked={presentationMode} onCheckedChange={togglePresentation} />
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {settingSections.map((section, si) => (
         <motion.div
           key={section.title}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: si * 0.1 }}
-          className="nexus-card p-5"
+          transition={{ delay: 0.1 + si * 0.05 }}
+          className="glass-panel p-5"
         >
-          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-4">{section.title}</div>
+          <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">{section.title}</div>
           <div className="space-y-4">
             {section.items.map(item => (
               <div key={item.key} className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-medium text-foreground">{item.label}</div>
-                  <div className="text-xs text-muted-foreground">{item.desc}</div>
+                  <div className="text-[10px] text-muted-foreground font-mono">{item.desc}</div>
                 </div>
                 <Switch
                   checked={values[item.key]}
-                  onCheckedChange={(v) => setValues(prev => ({ ...prev, [item.key]: v }))}
+                  onCheckedChange={(v) => handleToggle(item.key, v)}
                 />
               </div>
             ))}
@@ -68,30 +108,33 @@ const Settings: React.FC = () => {
         </motion.div>
       ))}
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="nexus-card p-5">
-        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-4">Campus Configuration</div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="glass-panel p-5">
+        <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Campus Configuration</div>
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="text-muted-foreground text-xs mb-1">Campus Name</div>
-            <div className="font-mono text-foreground">Campus Alpha</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground text-xs mb-1">Edge Nodes</div>
-            <div className="font-mono text-foreground">6 Active</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground text-xs mb-1">AI Model Version</div>
-            <div className="font-mono text-foreground">v2.4.1-edge</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground text-xs mb-1">Last Calibration</div>
-            <div className="font-mono text-foreground">2 hrs ago</div>
-          </div>
+          {[
+            { label: 'Campus Name', value: 'Campus Alpha' },
+            { label: 'Edge Nodes', value: '6 Active' },
+            { label: 'AI Model Version', value: 'v2.4.1-edge' },
+            { label: 'Last Calibration', value: '2 hrs ago' },
+          ].map(c => (
+            <div key={c.label}>
+              <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider mb-1">{c.label}</div>
+              <div className="font-mono text-sm text-foreground">{c.value}</div>
+            </div>
+          ))}
         </div>
-        <Button className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground text-xs">
-          Recalibrate System
-        </Button>
       </motion.div>
+
+      <div className="flex gap-3">
+        <button onClick={handleSave} className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-[10px] uppercase tracking-widest transition-all">
+          Save Configuration
+        </button>
+        {saved && (
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-mono text-[10px] text-nexus-green self-center">
+            ✓ Configuration saved
+          </motion.span>
+        )}
+      </div>
     </div>
   );
 };

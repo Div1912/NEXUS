@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bell, ChevronRight, User, Zap } from 'lucide-react';
 import { useNexus } from '@/contexts/NexusContext';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 
 const routeLabels: Record<string, string> = {
@@ -33,47 +31,47 @@ const TopBar: React.FC = () => {
   if (presentationMode) return null;
 
   return (
-    <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-card/60 backdrop-blur-md shrink-0">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">NEXUS OS</span>
-        <ChevronRight className="w-3 h-3 text-muted-foreground" />
-        <span className="text-foreground font-medium">{crumb}</span>
+    <header className="h-12 border-b border-accent/6 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md shrink-0">
+      <div className="flex items-center gap-2 text-xs font-mono">
+        <span className="text-muted-foreground">NEXUS</span>
+        <ChevronRight className="w-3 h-3 text-accent/20" />
+        <span className="text-foreground uppercase tracking-wider">{crumb}</span>
       </div>
 
       <div className="flex items-center gap-5">
         {/* Simulation Toggle */}
-        <div className="flex items-center gap-2 bg-secondary/50 rounded-lg px-3 py-1.5 border border-border">
+        <div className="flex items-center gap-2 px-3 py-1 border border-accent/8">
           <Zap className={`w-3 h-3 ${simulationActive ? 'text-nexus-alert' : 'text-muted-foreground'}`} />
-          <span className="text-xs text-muted-foreground">Sim</span>
+          <span className="font-mono text-[9px] text-muted-foreground uppercase">Sim</span>
           <Switch checked={simulationActive} onCheckedChange={toggleSimulation} />
           {simulationActive && (
-            <Badge className="bg-nexus-alert/20 text-nexus-alert border-nexus-alert/30 text-[9px] animate-pulse-glow">
+            <span className="font-mono text-[9px] text-nexus-alert animate-pulse-glow uppercase tracking-wider">
               500 EVENT
-            </Badge>
+            </span>
           )}
         </div>
 
         {/* Clock */}
-        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+        <span className="font-mono text-[10px] text-muted-foreground tabular-nums tracking-wider">
           {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </span>
 
         {/* Alerts */}
         <button className="relative text-muted-foreground hover:text-foreground transition-colors">
-          <Bell className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-nexus-red text-[8px] text-foreground flex items-center justify-center font-mono">
+          <Bell className="w-3.5 h-3.5" />
+          <span className="absolute -top-1 -right-1.5 w-3.5 h-3.5 rounded-full bg-nexus-red text-[7px] text-foreground flex items-center justify-center font-mono">
             {simulationActive ? 7 : 2}
           </span>
         </button>
 
-        {/* Campus Selector */}
-        <span className="text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 bg-secondary/30">
-          Campus Alpha
+        {/* Campus */}
+        <span className="font-mono text-[9px] text-muted-foreground border border-accent/8 px-2 py-1 uppercase tracking-wider">
+          Campus α
         </span>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent/50 flex items-center justify-center">
-          <User className="w-3.5 h-3.5 text-foreground" />
+        <div className="w-6 h-6 rounded-none bg-gradient-to-br from-primary/60 to-accent/30 flex items-center justify-center border border-accent/10">
+          <User className="w-3 h-3 text-foreground" />
         </div>
       </div>
     </header>
