@@ -59,7 +59,7 @@ export default {
         "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
         "pulse-glow": {
           "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.5" },
+          "50%": { opacity: "0.4" },
         },
         "dash-flow": {
           to: { strokeDashoffset: "-20" },
@@ -76,6 +76,14 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-8px)" },
         },
+        "data-pulse": {
+          "0%": { r: "3", opacity: "1" },
+          "100%": { r: "20", opacity: "0" },
+        },
+        "typewriter-blink": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -85,6 +93,7 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "slide-in-top": "slide-in-top 0.3s ease-out forwards",
         float: "float 6s ease-in-out infinite",
+        "typewriter-blink": "typewriter-blink 1s step-end infinite",
       },
     },
   },

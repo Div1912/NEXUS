@@ -14,7 +14,7 @@ const DashboardLayout: React.FC = () => {
         <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(p => !p)} />
       )}
       <div className={`flex-1 flex flex-col transition-all duration-200 ${
-        presentationMode ? 'ml-0' : sidebarCollapsed ? 'ml-16' : 'ml-60'
+        presentationMode ? 'ml-0' : sidebarCollapsed ? 'ml-14' : 'ml-56'
       }`}>
         <TopBar />
         <main className="flex-1 p-6 overflow-y-auto">

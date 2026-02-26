@@ -6,24 +6,24 @@
   :root {
     --background: 236 44% 7%;
     --foreground: 224 100% 97%;
-    --card: 235 49% 10%;
+    --card: 236 40% 8%;
     --card-foreground: 224 100% 97%;
-    --popover: 235 49% 10%;
+    --popover: 236 40% 8%;
     --popover-foreground: 224 100% 97%;
     --primary: 357 85% 52%;
     --primary-foreground: 224 100% 97%;
-    --secondary: 234 34% 12%;
+    --secondary: 234 34% 10%;
     --secondary-foreground: 224 100% 97%;
     --muted: 234 34% 12%;
-    --muted-foreground: 229 24% 62%;
+    --muted-foreground: 229 24% 52%;
     --accent: 186 100% 50%;
     --accent-foreground: 236 44% 7%;
     --destructive: 0 100% 68%;
     --destructive-foreground: 224 100% 97%;
-    --border: 186 100% 50% / 0.12;
-    --input: 234 34% 18%;
+    --border: 186 100% 50% / 0.10;
+    --input: 234 34% 14%;
     --ring: 186 100% 50%;
-    --radius: 1rem;
+    --radius: 0.25rem;
 
     --nexus-red: 357 85% 52%;
     --nexus-cyan: 186 100% 50%;
@@ -31,16 +31,19 @@
     --nexus-yellow: 47 91% 53%;
     --nexus-alert: 0 100% 68%;
     --nexus-dim: 232 18% 41%;
-    --nexus-surface: 234 34% 12%;
+    --nexus-surface: 234 34% 10%;
 
-    --sidebar-background: 235 49% 8%;
+    --sidebar-background: 236 44% 6%;
     --sidebar-foreground: 224 100% 97%;
     --sidebar-primary: 357 85% 52%;
     --sidebar-primary-foreground: 224 100% 97%;
-    --sidebar-accent: 234 34% 14%;
+    --sidebar-accent: 234 34% 12%;
     --sidebar-accent-foreground: 224 100% 97%;
-    --sidebar-border: 186 100% 50% / 0.08;
+    --sidebar-border: 186 100% 50% / 0.06;
     --sidebar-ring: 186 100% 50%;
+
+    --glass-bg: 236 44% 7% / 0.6;
+    --glass-border: 186 100% 50% / 0.12;
   }
 }
 
@@ -68,35 +71,80 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--nexus-red)), hsl(var(--nexus-cyan)));
   }
+
+  .glass-panel {
+    background: hsla(var(--glass-bg));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsla(var(--glass-border));
+  }
+
+  .glass-panel-strong {
+    background: hsla(236, 44%, 7%, 0.8);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid hsla(186, 100%, 50%, 0.15);
+  }
+
   .nexus-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
+    background: hsla(var(--glass-bg));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsla(var(--glass-border));
     border-radius: var(--radius);
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
   }
   .nexus-card:hover {
-    border-color: hsl(var(--nexus-cyan) / 0.25);
-    transform: translateY(-4px);
+    border-color: hsla(186, 100%, 50%, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px hsla(186, 100%, 50%, 0.06);
   }
+
   .nexus-glow-cyan {
-    box-shadow: 0 0 20px hsl(var(--nexus-cyan) / 0.15);
+    box-shadow: 0 0 30px hsla(186, 100%, 50%, 0.12), inset 0 0 30px hsla(186, 100%, 50%, 0.03);
   }
   .nexus-glow-red {
-    box-shadow: 0 0 20px hsl(var(--nexus-red) / 0.15);
+    box-shadow: 0 0 30px hsla(357, 85%, 52%, 0.15), inset 0 0 30px hsla(357, 85%, 52%, 0.03);
+  }
+
+  .terminal-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: hsl(var(--nexus-cyan));
+    text-shadow: 0 0 8px hsla(186, 100%, 50%, 0.4);
+  }
+
+  .scan-line {
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--nexus-cyan) / 0.3), transparent);
+    animation: scan-down 4s linear infinite;
+  }
+
+  @keyframes scan-down {
+    0% { top: 0; }
+    100% { top: 100%; }
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--nexus-cyan) / 0.3);
+    background: hsla(186, 100%, 50%, 0.2);
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--nexus-cyan) / 0.5);
+    background: hsla(186, 100%, 50%, 0.4);
   }
 }
