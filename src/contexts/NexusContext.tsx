@@ -1,0 +1,42 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+interface NexusState {
+  simulationActive: boolean;
+  presentationMode: boolean;
+  toggleSimulation: () => void;
+  togglePresentation: () => void;
+}
+
+const NexusContext = createContext<NexusState | null>(null);
+
+export const NexusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [simulationActive, setSimulationActive] = useState(false);
+  const [presentationMode, setPresentationMode] = useState(false);
+
+  const toggleSimulation = useCallback(() => setSimulationActive(p => !p), []);
+  const togglePresentation = useCallback(() => setPresentationMode(p => !p), []);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'p' || e.key === 'P') {
+        if (document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          togglePresentation();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [togglePresentation]);
+
+  return (
+    <NexusContext.Provider value={{ simulationActive, presentationMode, toggleSimulation, togglePresentation }}>
+      {children}
+    </NexusContext.Provider>
+  );
+};
+
+export const useNexus = () => {
+  const ctx = useContext(NexusContext);
+  if (!ctx) throw new Error('useNexus must be used within NexusProvider');
+  return ctx;
+};
