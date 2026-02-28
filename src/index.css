@@ -148,6 +148,11 @@
     background: hsla(186, 100%, 50%, 0.4);
   }
 
+  /* Hide Lovable badge */
+  #lovable-badge {
+    display: none !important;
+  }
+
   .interactive-glow {
     transition: box-shadow 0.3s, border-color 0.3s;
   }

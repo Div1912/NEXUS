@@ -66,14 +66,23 @@ const DashboardSidebar: React.FC<{ collapsed: boolean; onToggle: () => void }> =
         })}
       </nav>
 
-      {/* Edge Status */}
+      {/* Campus Profile */}
       {!collapsed && (
-        <div className="mx-2 mb-2 p-2.5 border-t border-white/[0.04] text-[9px] font-mono">
-          <div className="text-muted-foreground uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-nexus-green" style={{ boxShadow: '0 0 4px hsl(155, 100%, 43%)' }} />
-            Edge Status
+        <div className="mx-2 mb-2 p-2.5 border-t border-white/[0.04]">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-full border border-accent/20 flex items-center justify-center bg-accent/5">
+              <span className="font-display text-[10px] font-bold text-accent">SC</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] text-foreground font-bold tracking-wide">SMART CAMPUS</span>
+              <span className="font-mono text-[8px] text-muted-foreground tracking-wider">ALPHA DEPLOYMENT</span>
+            </div>
           </div>
-          <div className="space-y-1.5">
+          <div className="text-[9px] font-mono space-y-1.5">
+            <div className="text-muted-foreground uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-nexus-green" style={{ boxShadow: '0 0 4px hsl(155, 100%, 43%)' }} />
+              Edge Status
+            </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Nodes</span>
               <span className="text-nexus-green tabular-nums">{edge.nodeOnline}/6</span>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNexus } from '@/contexts/NexusContext';
 import { getKPIs, getCausalEvents, getModules } from '@/services/mockData';
@@ -10,6 +10,14 @@ import CausalGraph from './CausalGraph';
 
 const DashboardOverview: React.FC = () => {
   const { simulationActive, presentationMode } = useNexus();
+  const [tick, setTick] = useState(0);
+
+  // Refresh data periodically to feel live
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), simulationActive ? 1500 : 3000);
+    return () => clearInterval(interval);
+  }, [simulationActive]);
+
   const kpis = getKPIs(simulationActive);
   const events = getCausalEvents(simulationActive);
   const modules = getModules(simulationActive);
