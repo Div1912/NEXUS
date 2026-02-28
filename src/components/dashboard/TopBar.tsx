@@ -33,7 +33,7 @@ const TopBar: React.FC = () => {
   if (presentationMode) return null;
 
   return (
-    <header className="h-12 border-b border-accent/6 flex items-center justify-between px-6 bg-background/80 backdrop-blur-md shrink-0">
+    <header className="h-12 border-b border-white/[0.04] flex items-center justify-between px-6 bg-background/80 backdrop-blur-md shrink-0">
       <div className="flex items-center gap-2 text-xs font-mono">
         <span className="text-muted-foreground">NEXUS</span>
         <ChevronRight className="w-3 h-3 text-accent/20" />

@@ -170,4 +170,30 @@
   .animate-dash-flow {
     animation: dash-flow 2s linear infinite;
   }
+
+  @keyframes slow-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .animate-slow-pulse {
+    animation: slow-pulse 3s ease-in-out infinite;
+  }
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  --border: 186 100% 50% / 0.25;
+  --glass-border: 186 100% 50% / 0.3;
+  --muted-foreground: 229 24% 68%;
+  --sidebar-border: 186 100% 50% / 0.2;
+}
+.high-contrast .terminal-text {
+  text-shadow: 0 0 12px hsla(186, 100%, 50%, 0.6);
+}
+.high-contrast .glass-panel {
+  border-color: hsla(186, 100%, 50%, 0.25);
+}
+.high-contrast .nexus-card:hover {
+  border-color: hsla(186, 100%, 50%, 0.4);
+  box-shadow: 0 8px 32px hsla(186, 100%, 50%, 0.12);
 }

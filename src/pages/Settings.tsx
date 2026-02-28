@@ -7,7 +7,7 @@ const settingSections = [
   {
     title: 'System',
     items: [
-      { key: 'darkMode', label: 'Dark Mode', desc: 'Deep navy theme across the interface', default: true },
+      { key: 'highContrast', label: 'High Contrast UI', desc: 'Increase brightness of cyan/red borders and telemetry text', default: false, contextual: true },
       { key: 'animations', label: 'Animations', desc: 'Enable UI animations and transitions', default: true },
       { key: 'sounds', label: 'Alert Sounds', desc: 'Play sounds on critical alerts', default: false },
     ],
@@ -30,7 +30,7 @@ const settingSections = [
 ];
 
 const Settings: React.FC = () => {
-  const { simulationActive, toggleSimulation, presentationMode, togglePresentation } = useNexus();
+  const { simulationActive, toggleSimulation, highContrast, toggleHighContrast } = useNexus();
   const [values, setValues] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     settingSections.forEach(s => s.items.forEach(i => { init[i.key] = i.default; }));
@@ -39,6 +39,10 @@ const Settings: React.FC = () => {
   const [saved, setSaved] = useState(false);
 
   const handleToggle = (key: string, val: boolean) => {
+    if (key === 'highContrast') {
+      toggleHighContrast();
+      return;
+    }
     setValues(prev => ({ ...prev, [key]: val }));
     setSaved(false);
   };
@@ -62,21 +66,11 @@ const Settings: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-medium text-foreground">Simulation Mode</div>
-              <div className="text-[10px] text-muted-foreground font-mono">Trigger 500-person mass ingress event</div>
+              <div className="text-[10px] text-muted-foreground font-mono">Trigger 500-person mass ingress event across all modules</div>
             </div>
             <div className="flex items-center gap-2">
               {simulationActive && <span className="font-mono text-[9px] text-nexus-alert animate-pulse-glow">ACTIVE</span>}
               <Switch checked={simulationActive} onCheckedChange={toggleSimulation} />
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-medium text-foreground">Presentation Mode</div>
-              <div className="text-[10px] text-muted-foreground font-mono">Cinematic layout for live demos (shortcut: P key)</div>
-            </div>
-            <div className="flex items-center gap-2">
-              {presentationMode && <span className="font-mono text-[9px] text-accent">ON</span>}
-              <Switch checked={presentationMode} onCheckedChange={togglePresentation} />
             </div>
           </div>
         </div>
@@ -92,18 +86,22 @@ const Settings: React.FC = () => {
         >
           <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">{section.title}</div>
           <div className="space-y-4">
-            {section.items.map(item => (
-              <div key={item.key} className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-foreground">{item.label}</div>
-                  <div className="text-[10px] text-muted-foreground font-mono">{item.desc}</div>
+            {section.items.map(item => {
+              const isContextual = (item as any).contextual;
+              const checked = isContextual && item.key === 'highContrast' ? highContrast : values[item.key];
+              return (
+                <div key={item.key} className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium text-foreground">{item.label}</div>
+                    <div className="text-[10px] text-muted-foreground font-mono">{item.desc}</div>
+                  </div>
+                  <Switch
+                    checked={checked}
+                    onCheckedChange={(v) => handleToggle(item.key, v)}
+                  />
                 </div>
-                <Switch
-                  checked={values[item.key]}
-                  onCheckedChange={(v) => handleToggle(item.key, v)}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       ))}
