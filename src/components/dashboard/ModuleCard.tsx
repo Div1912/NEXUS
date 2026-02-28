@@ -29,7 +29,7 @@ const ModuleCard: React.FC<{ module: ModuleData; index: number }> = ({ module, i
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.3 }}
       onClick={() => navigate(`/dashboard/${module.id}`)}
-      className={`bg-background p-5 cursor-pointer group hover:bg-secondary/20 transition-all border-l-2 ${isAlert ? 'border-l-nexus-alert' : 'border-l-accent/10'}`}
+      className={`bg-background p-5 cursor-pointer group transition-all border-l-2 ${isAlert ? 'border-l-nexus-alert' : 'border-l-accent/10'} hover:bg-secondary/20 hover:shadow-[0_0_20px_hsla(186,100%,50%,0.06)] hover:border-l-accent/30`}
     >
       <div className="flex items-center justify-between mb-3">
         <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.15em]">NEXUS {module.name}</span>

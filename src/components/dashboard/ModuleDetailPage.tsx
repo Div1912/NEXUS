@@ -100,6 +100,8 @@ const MaintainRack: React.FC = () => {
     { name: 'Power Distribution Unit', status: 'online', temp: 35, mtbf: 890 },
     { name: 'Edge Gateway #1', status: 'online', temp: 44, mtbf: 760 },
     { name: 'Sensor Array Hub', status: 'warning', temp: 58, mtbf: 420 },
+    { name: 'Ultrasonic Sensor Array (Gate B)', status: 'online', temp: 28, mtbf: 1200 },
+    { name: 'DHT22 Climate Nodes (Lab 3)', status: 'online', temp: 31, mtbf: 980 },
   ];
   return (
     <div className="glass-panel p-5 scan-line">
@@ -177,6 +179,7 @@ const moduleConfig: Record<string, {
   cards: { label: string; value: string; sub: string }[];
   visualization: React.FC<{ sim: boolean }>;
   suggestions: string[];
+  eventContext?: string;
 }> = {
   flow: {
     cards: [
@@ -185,33 +188,101 @@ const moduleConfig: Record<string, {
       { label: 'Shuttle ETA', value: '3', sub: 'min' },
     ],
     visualization: FlowSankey,
-    suggestions: ['Reroute Gate B → Gate C', 'Deploy additional shuttle', 'Open overflow path'],
+    suggestions: ['Reroute Gate B → Gate C', 'Deploy additional shuttle', 'Open overflow path', 'BROADCAST SAFE-MOBILITY NUDGE: Reroute pedestrian flow to Gate C'],
+    eventContext: 'ACTIVE EVENT CONTEXT: Science Symposium (High Traffic)',
   },
   eco: {
     cards: [
       { label: 'Consumption', value: '456', sub: 'kW' },
       { label: 'Solar Output', value: '124', sub: 'kW' },
       { label: 'Grid Load', value: '67', sub: '%' },
+      { label: 'Water Flow', value: '2.4', sub: 'kL/hr' },
     ],
     visualization: ({ sim }) => (
-      <div className="glass-panel p-5">
-        <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Energy Flow — Real-time</div>
-        <svg viewBox="0 0 600 200" className="w-full">
-          {Array.from({ length: 60 }, (_, i) => {
-            const val = sim ? 40 + Math.random() * 50 : 20 + Math.random() * 30;
-            const h = val * 1.5;
-            return (
-              <rect key={i} x={i * 10} y={200 - h} width={8} height={h}
-                fill={val > 60 ? 'hsla(0,100%,68%,0.4)' : val > 40 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)'}
-                stroke={val > 60 ? 'hsla(0,100%,68%,0.6)' : val > 40 ? 'hsla(47,91%,53%,0.4)' : 'hsla(155,100%,43%,0.4)'}
-                strokeWidth="0.5" />
-            );
-          })}
-          <line x1={0} y1={200} x2={600} y2={200} stroke="hsla(186,100%,50%,0.1)" strokeWidth="0.5" />
-        </svg>
+      <div className="space-y-4">
+        {/* Energy bar chart */}
+        <div className="glass-panel p-5">
+          <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Energy Flow — Real-time</div>
+          <svg viewBox="0 0 600 200" className="w-full">
+            {Array.from({ length: 60 }, (_, i) => {
+              const val = sim ? 40 + Math.random() * 50 : 20 + Math.random() * 30;
+              const h = val * 1.5;
+              return (
+                <rect key={i} x={i * 10} y={200 - h} width={8} height={h}
+                  fill={val > 60 ? 'hsla(0,100%,68%,0.4)' : val > 40 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)'}
+                  stroke={val > 60 ? 'hsla(0,100%,68%,0.6)' : val > 40 ? 'hsla(47,91%,53%,0.4)' : 'hsla(155,100%,43%,0.4)'}
+                  strokeWidth="0.5" />
+              );
+            })}
+            <line x1={0} y1={200} x2={600} y2={200} stroke="hsla(186,100%,50%,0.1)" strokeWidth="0.5" />
+          </svg>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Smart Bin Topology */}
+          <div className="glass-panel p-5">
+            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Smart Bin Topology — Ultrasonic</div>
+            <div className="flex items-end justify-between gap-4 h-32">
+              {[
+                { zone: 'Cafeteria', fill: 78 },
+                { zone: 'Science Block', fill: 45 },
+                { zone: 'Library', fill: 32 },
+                { zone: 'Sports Complex', fill: 61 },
+              ].map(bin => (
+                <div key={bin.zone} className="flex-1 flex flex-col items-center gap-2">
+                  <div className="w-full h-24 bg-secondary/30 border border-accent/8 relative overflow-hidden">
+                    <div
+                      className="absolute bottom-0 w-full transition-all"
+                      style={{
+                        height: `${bin.fill}%`,
+                        background: bin.fill > 70 ? 'hsla(0,100%,68%,0.4)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)',
+                        borderTop: `1px solid ${bin.fill > 70 ? 'hsla(0,100%,68%,0.6)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.5)' : 'hsla(155,100%,43%,0.5)'}`,
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-foreground tabular-nums font-bold">
+                      {bin.fill}%
+                    </div>
+                  </div>
+                  <span className="font-mono text-[8px] text-muted-foreground text-center leading-tight">{bin.zone}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Water Consumption / Leak Status */}
+          <div className="glass-panel p-5">
+            <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Water Consumption / Leak Status</div>
+            <div className="space-y-4">
+              <div>
+                <div className="font-mono text-[9px] text-muted-foreground mb-1">Daily Consumption</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-2xl font-bold text-foreground tabular-nums">14.2</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">kL</span>
+                </div>
+              </div>
+              <div>
+                <div className="font-mono text-[9px] text-muted-foreground mb-1">Leak Status</div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-nexus-green" style={{ boxShadow: '0 0 4px hsl(155,100%,43%)' }} />
+                  <span className="font-mono text-xs text-nexus-green">NO LEAKS DETECTED</span>
+                </div>
+              </div>
+              <div>
+                <div className="font-mono text-[9px] text-muted-foreground mb-2">Flow Rate</div>
+                <div className="h-2 bg-secondary/30 border border-accent/8 overflow-hidden">
+                  <div className="h-full bg-accent/30 transition-all" style={{ width: '58%' }} />
+                </div>
+                <div className="flex justify-between mt-1 font-mono text-[8px] text-muted-foreground">
+                  <span>0 kL/hr</span>
+                  <span>5 kL/hr</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     ),
-    suggestions: ['Shed non-essential loads', 'Boost solar inverter', 'Switch to battery backup'],
+    suggestions: ['Shed non-essential loads', 'Boost solar inverter', 'Switch to battery backup', 'Schedule bin collection'],
   },
   space: {
     cards: [
@@ -294,6 +365,17 @@ const ModuleDetailPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Event Context Banner */}
+      {config.eventContext && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 px-4 py-2.5 border border-accent/20 bg-accent/5"
+        >
+          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 8px hsl(186,100%,50%)' }} />
+          <span className="font-mono text-[10px] text-accent uppercase tracking-[0.15em] font-bold">{config.eventContext}</span>
+        </motion.div>
+      )}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display text-xl font-bold text-foreground tracking-wide">{mod.fullName}</h1>
         <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-[0.2em] mt-1">
@@ -331,19 +413,25 @@ const ModuleDetailPage: React.FC = () => {
       <div className="glass-panel p-5">
         <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-3">Suggested Actions</div>
         <div className="flex flex-wrap gap-2">
-          {config.suggestions.map(s => (
-            <button
-              key={s}
-              onClick={() => setSelectedAction(s)}
-              className={`font-mono text-[10px] px-4 py-2 border transition-all uppercase tracking-wider ${
-                selectedAction === s
-                  ? 'bg-accent/10 border-accent/40 text-accent'
-                  : 'border-accent/8 text-muted-foreground hover:border-accent/25 hover:text-foreground'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
+          {config.suggestions.map(s => {
+            const isNudge = s.startsWith('BROADCAST');
+            return (
+              <button
+                key={s}
+                onClick={() => setSelectedAction(s)}
+                className={`font-mono text-[10px] px-4 py-2 border transition-all uppercase tracking-wider ${
+                  isNudge
+                    ? 'border-accent/40 text-accent bg-accent/5 relative'
+                    : selectedAction === s
+                      ? 'bg-accent/10 border-accent/40 text-accent'
+                      : 'border-accent/8 text-muted-foreground hover:border-accent/25 hover:text-foreground'
+                }`}
+              >
+                {isNudge && <span className="absolute -left-0.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ boxShadow: '0 0 6px hsl(186,100%,50%)' }} />}
+                {s}
+              </button>
+            );
+          })}
         </div>
         {selectedAction && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 font-mono text-[10px] text-nexus-green">

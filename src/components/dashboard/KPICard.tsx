@@ -35,9 +35,15 @@ const KPICard: React.FC<{ data: KPIData; index: number; presentationMode?: boole
     >
       <div className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-mono">{data.label}</div>
       <div className="flex items-baseline gap-2">
-        <span className={`font-mono font-bold text-foreground tabular-nums ${presentationMode ? 'text-5xl' : 'text-3xl'}`}>
+        <motion.span
+          key={data.value}
+          initial={{ opacity: 0.6, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className={`font-mono font-bold text-foreground tabular-nums ${presentationMode ? 'text-5xl' : 'text-3xl'}`}
+        >
           {typeof data.value === 'number' && data.value % 1 !== 0 ? data.value.toFixed(1) : data.value}
-        </span>
+        </motion.span>
         {data.unit && <span className="font-mono text-xs text-muted-foreground">{data.unit}</span>}
       </div>
       <div className="flex items-center gap-3 mt-1">

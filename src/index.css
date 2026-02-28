@@ -147,4 +147,27 @@
   ::-webkit-scrollbar-thumb:hover {
     background: hsla(186, 100%, 50%, 0.4);
   }
+
+  .interactive-glow {
+    transition: box-shadow 0.3s, border-color 0.3s;
+  }
+  .interactive-glow:hover {
+    box-shadow: 0 0 16px hsla(186, 100%, 50%, 0.08);
+    border-color: hsla(186, 100%, 50%, 0.2);
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes dash-flow {
+    to { stroke-dashoffset: -20; }
+  }
+  .animate-dash-flow {
+    animation: dash-flow 2s linear infinite;
+  }
 }
