@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
 import TopBar from './TopBar';
+import AmbientParticles from './AmbientParticles';
 import { useNexus } from '@/contexts/NexusContext';
 
 const DashboardLayout: React.FC = () => {
@@ -9,11 +10,12 @@ const DashboardLayout: React.FC = () => {
   const { presentationMode } = useNexus();
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex relative">
+      <AmbientParticles />
       {!presentationMode && (
         <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(p => !p)} />
       )}
-      <div className={`flex-1 flex flex-col transition-all duration-200 ${
+      <div className={`flex-1 flex flex-col transition-all duration-200 relative z-10 ${
         presentationMode ? 'ml-0' : sidebarCollapsed ? 'ml-14' : 'ml-56'
       }`}>
         <TopBar />

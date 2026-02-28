@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Bell, ChevronRight, User, Zap } from 'lucide-react';
 import { useNexus } from '@/contexts/NexusContext';
 import { Switch } from '@/components/ui/switch';
+import NotificationPanel from './NotificationPanel';
 
 const routeLabels: Record<string, string> = {
   '/dashboard': 'Overview',
@@ -20,6 +21,7 @@ const TopBar: React.FC = () => {
   const location = useLocation();
   const { simulationActive, toggleSimulation, presentationMode } = useNexus();
   const [time, setTime] = useState(new Date());
+  const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
@@ -57,12 +59,13 @@ const TopBar: React.FC = () => {
         </span>
 
         {/* Alerts */}
-        <button className="relative text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={() => setNotifOpen(true)} className="relative text-muted-foreground hover:text-foreground transition-colors">
           <Bell className="w-3.5 h-3.5" />
           <span className="absolute -top-1 -right-1.5 w-3.5 h-3.5 rounded-full bg-nexus-red text-[7px] text-foreground flex items-center justify-center font-mono">
             {simulationActive ? 7 : 2}
           </span>
         </button>
+        <NotificationPanel open={notifOpen} onOpenChange={setNotifOpen} />
 
         {/* Campus */}
         <span className="font-mono text-[9px] text-muted-foreground border border-accent/8 px-2 py-1 uppercase tracking-wider">

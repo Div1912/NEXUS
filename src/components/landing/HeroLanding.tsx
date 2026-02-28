@@ -1,14 +1,16 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import NeuralMesh from './NeuralMesh';
 import StatCounter from './StatCounter';
 import CampusVisualization from './CampusVisualization';
 import NexusLogo from '@/components/dashboard/NexusLogo';
+import BootSequence from './BootSequence';
 
 const HeroLanding: React.FC = () => {
   const navigate = useNavigate();
   const archRef = useRef<HTMLDivElement>(null);
+  const [booting, setBooting] = useState(false);
 
   const scrollToArch = () => {
     archRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -16,6 +18,7 @@ const HeroLanding: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden">
+      {booting && <BootSequence onComplete={() => navigate('/dashboard')} />}
       {/* HERO SECTION */}
       <div className="relative min-h-screen flex items-center overflow-hidden">
         <NeuralMesh />
@@ -81,7 +84,7 @@ const HeroLanding: React.FC = () => {
               className="flex gap-4 flex-wrap"
             >
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => setBooting(true)}
                 className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-mono text-xs uppercase tracking-widest transition-all hover:shadow-[0_0_30px_hsla(357,85%,52%,0.3)]"
               >
                 Explore Dashboard
@@ -119,12 +122,12 @@ const HeroLanding: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-accent/5">
             {[
-              { id: 'FLOW', title: 'Smart Mobility', desc: 'Real-time pedestrian flow, gate management, shuttle orchestration', metric: '1,247/hr' },
-              { id: 'ECO', title: 'Energy Intelligence', desc: 'Consumption optimization, solar integration, grid load balancing', metric: '342 kWh saved' },
-              { id: 'SPACE', title: 'Spatial Intelligence', desc: 'Room occupancy, density mapping, dynamic space allocation', metric: '62% occupancy' },
-              { id: 'MAINTAIN', title: 'Predictive Maintenance', desc: 'Equipment health scoring, MTBF prediction, auto-dispatch', metric: '94% health' },
-              { id: 'GUARD', title: 'Safety & Security', desc: 'Threat detection, perimeter monitoring, anomaly classification', metric: 'Level 0' },
-              { id: 'FEDERATE', title: 'Edge Federation', desc: 'Node synchronization, distributed inference, bandwidth optimization', metric: '6/6 nodes' },
+              { id: 'FLOW', title: 'Smart Mobility', desc: 'Real-time pedestrian flow, gate management, shuttle orchestration', metric: 'Real-time' },
+              { id: 'ECO', title: 'Energy Intelligence', desc: 'Consumption optimization, solar integration, grid load balancing', metric: 'Autonomous' },
+              { id: 'SPACE', title: 'Spatial Intelligence', desc: 'Room occupancy, density mapping, dynamic space allocation', metric: '30 Zones' },
+              { id: 'MAINTAIN', title: 'Predictive Maintenance', desc: 'Equipment health scoring, MTBF prediction, auto-dispatch', metric: 'Predictive' },
+              { id: 'GUARD', title: 'Safety & Security', desc: 'Threat detection, perimeter monitoring, anomaly classification', metric: '48 Cameras' },
+              { id: 'FEDERATE', title: 'Edge Federation', desc: 'Node synchronization, distributed inference, bandwidth optimization', metric: '6 Nodes' },
             ].map((m, i) => (
               <motion.div
                 key={m.id}
