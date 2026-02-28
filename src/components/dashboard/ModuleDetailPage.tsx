@@ -223,22 +223,46 @@ const moduleConfig: Record<string, {
       { label: 'Grid Load', value: '67', sub: '%' },
       { label: 'Water Flow', value: '2.4', sub: 'kL/hr' },
     ],
-    visualization: ({ sim }) => (
+    visualization: ({ sim }) => {
+      const energyData = useMemo(() => Array.from({ length: 60 }, (_, i) => {
+        const base = sim ? 55 + Math.sin(i * 0.15) * 20 : 25 + Math.sin(i * 0.1) * 10;
+        return base + (Math.random() - 0.5) * 12;
+      }), [sim]);
+      const maxVal = Math.max(...energyData);
+      return (
       <div className="space-y-4">
         <div className="glass-panel p-5">
           <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Energy Flow — Real-time</div>
-          <svg viewBox="0 0 600 200" className="w-full">
-            {Array.from({ length: 60 }, (_, i) => {
-              const val = sim ? 40 + Math.random() * 50 : 20 + Math.random() * 30;
-              const h = val * 1.5;
-              return (
-                <rect key={i} x={i * 10} y={200 - h} width={8} height={h}
-                  fill={val > 60 ? 'hsla(0,100%,68%,0.4)' : val > 40 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)'}
-                  stroke={val > 60 ? 'hsla(0,100%,68%,0.6)' : val > 40 ? 'hsla(47,91%,53%,0.4)' : 'hsla(155,100%,43%,0.4)'}
-                  strokeWidth="0.5" />
-              );
-            })}
+          <svg viewBox="0 0 600 220" className="w-full">
+            {/* Background grid */}
+            {[0.25, 0.5, 0.75, 1].map(f => (
+              <g key={f}>
+                <line x1={0} y1={200 - f * 180} x2={600} y2={200 - f * 180} stroke="hsla(186,100%,50%,0.04)" strokeWidth="0.5" />
+                <text x={596} y={200 - f * 180 - 2} textAnchor="end" fill="hsla(186,100%,50%,0.15)" fontSize="6" fontFamily="JetBrains Mono">{Math.round(f * maxVal)}kW</text>
+              </g>
+            ))}
+            {/* Area fill */}
+            <defs>
+              <linearGradient id="ecoGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={sim ? 'hsla(0,100%,68%,0.3)' : 'hsla(186,100%,50%,0.2)'} />
+                <stop offset="100%" stopColor="hsla(186,100%,50%,0)" />
+              </linearGradient>
+            </defs>
+            <path d={`M0,200 ${energyData.map((v, i) => `L${i * 10},${200 - (v / maxVal) * 180}`).join(' ')} L590,200 Z`} fill="url(#ecoGrad)" />
+            {/* Line */}
+            <path d={energyData.map((v, i) => `${i === 0 ? 'M' : 'L'}${i * 10},${200 - (v / maxVal) * 180}`).join(' ')}
+              fill="none" stroke={sim ? 'hsla(0,100%,68%,0.7)' : 'hsla(186,100%,50%,0.6)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            {/* Dots at peaks */}
+            {energyData.map((v, i) => v > maxVal * 0.85 ? (
+              <circle key={i} cx={i * 10} cy={200 - (v / maxVal) * 180} r="2.5" fill={sim ? 'hsl(0,100%,68%)' : 'hsl(186,100%,50%)'} opacity="0.8">
+                <animate attributeName="r" values="2;3.5;2" dur="2s" repeatCount="indefinite" />
+              </circle>
+            ) : null)}
             <line x1={0} y1={200} x2={600} y2={200} stroke="hsla(186,100%,50%,0.1)" strokeWidth="0.5" />
+            {/* Time labels */}
+            {[0, 15, 30, 45, 59].map(i => (
+              <text key={i} x={i * 10} y={214} textAnchor="middle" fill="hsla(186,100%,50%,0.2)" fontSize="6" fontFamily="JetBrains Mono">{i}m</text>
+            ))}
           </svg>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -295,7 +319,8 @@ const moduleConfig: Record<string, {
           </div>
         </div>
       </div>
-    ),
+    );
+    },
     suggestions: ['Shed non-essential loads', 'Boost solar inverter', 'Switch to battery backup', 'Schedule bin collection'],
   },
   space: {

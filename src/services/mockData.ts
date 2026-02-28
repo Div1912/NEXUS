@@ -1,15 +1,19 @@
 import type { KPIData, CausalEvent, ModuleData, BuildingNode, CausalGraphNode, CausalGraphEdge, EdgeStatus } from '@/types/nexus';
 
+const jitter = (val: number, pct: number) => val + (Math.random() - 0.5) * 2 * val * pct;
+
 const sparkline = (base: number, variance: number, len = 20): number[] =>
   Array.from({ length: len }, () => base + (Math.random() - 0.5) * variance);
 
 export const getKPIs = (simActive = false): KPIData[] => {
-  const mult = simActive ? 2.2 : 1;
+  const base = simActive ? 2743 : 1247;
+  const footfall = Math.round(jitter(base, 0.04));
+  const energyBase = simActive ? 239 : 342;
   return [
-    { id: 'footfall', label: 'Live Footfall', value: Math.round(1247 * mult), unit: '', trend: simActive ? 118 : 12, confidence: 94, sparkline: sparkline(1247 * mult, 200), color: 'nexus-cyan', moduleId: 'flow' },
-    { id: 'energy', label: 'Energy Saved', value: Math.round(342 * (simActive ? 0.7 : 1)), unit: 'kWh', trend: simActive ? -8 : 18, confidence: 91, sparkline: sparkline(342, 50), color: 'nexus-green', moduleId: 'eco' },
-    { id: 'alerts', label: 'Active Alerts', value: simActive ? 7 : 2, unit: '', trend: simActive ? 250 : -15, confidence: 97, sparkline: sparkline(simActive ? 7 : 2, 3), color: 'nexus-yellow', moduleId: 'guard' },
-    { id: 'latency', label: 'Avg Latency', value: simActive ? 4.2 : 2.8, unit: 'ms', trend: simActive ? 50 : -5, confidence: 99, sparkline: sparkline(simActive ? 4.2 : 2.8, 1.5), color: 'nexus-red', moduleId: 'maintain' },
+    { id: 'footfall', label: 'Live Footfall', value: Math.round(jitter(footfall, 0.02)), unit: '', trend: +(jitter(simActive ? 118 : 12, 0.15)).toFixed(1), confidence: Math.round(jitter(94, 0.02)), sparkline: sparkline(footfall, footfall * 0.15), color: 'nexus-cyan', moduleId: 'flow' },
+    { id: 'energy', label: 'Energy Saved', value: Math.round(jitter(energyBase, 0.05)), unit: 'kWh', trend: +(jitter(simActive ? -8 : 18, 0.2)).toFixed(1), confidence: Math.round(jitter(91, 0.02)), sparkline: sparkline(energyBase, energyBase * 0.12), color: 'nexus-green', moduleId: 'eco' },
+    { id: 'alerts', label: 'Active Alerts', value: Math.round(jitter(simActive ? 7 : 2, 0.3)), unit: '', trend: +(jitter(simActive ? 250 : -15, 0.1)).toFixed(1), confidence: Math.round(jitter(97, 0.01)), sparkline: sparkline(simActive ? 7 : 2, 3), color: 'nexus-yellow', moduleId: 'guard' },
+    { id: 'latency', label: 'Avg Latency', value: +(jitter(simActive ? 4.2 : 2.8, 0.08)).toFixed(1), unit: 'ms', trend: +(jitter(simActive ? 50 : -5, 0.15)).toFixed(1), confidence: Math.round(jitter(99, 0.005)), sparkline: sparkline(simActive ? 4.2 : 2.8, 1.5), color: 'nexus-red', moduleId: 'maintain' },
   ];
 };
 
@@ -29,14 +33,19 @@ export const getCausalEvents = (simActive = false): CausalEvent[] => {
   return events;
 };
 
-export const getModules = (simActive = false): ModuleData[] => [
-  { id: 'flow', name: 'FLOW', fullName: 'NEXUS FLOW — Smart Mobility', status: simActive ? 'warning' : 'online', primaryMetric: { label: 'Footfall', value: simActive ? 2743 : 1247, unit: '/hr' }, sparkline: sparkline(1247, 300), subMetrics: [{ label: 'Gates Active', value: '4/4' }, { label: 'Shuttle ETA', value: '3 min' }], alertCount: simActive ? 2 : 0 },
-  { id: 'eco', name: 'ECO', fullName: 'NEXUS ECO — Energy Intelligence', status: simActive ? 'alert' : 'online', primaryMetric: { label: 'Consumption', value: simActive ? 890 : 456, unit: 'kW' }, sparkline: sparkline(456, 80), subMetrics: [{ label: 'Solar Output', value: '124 kW' }, { label: 'Grid Load', value: '67%' }], alertCount: simActive ? 3 : 0 },
-  { id: 'space', name: 'SPACE', fullName: 'NEXUS SPACE — Spatial Intelligence', status: 'online', primaryMetric: { label: 'Occupancy', value: simActive ? 89 : 62, unit: '%' }, sparkline: sparkline(62, 15), subMetrics: [{ label: 'Rooms Available', value: '12/30' }, { label: 'Density', value: 'Normal' }], alertCount: 0 },
-  { id: 'maintain', name: 'MAINTAIN', fullName: 'NEXUS MAINTAIN — Predictive Maintenance', status: 'online', primaryMetric: { label: 'Health Score', value: 94, unit: '%' }, sparkline: sparkline(94, 5), subMetrics: [{ label: 'Tasks Pending', value: '3' }, { label: 'MTBF', value: '720 hrs' }], alertCount: 0 },
-  { id: 'guard', name: 'GUARD', fullName: 'NEXUS GUARD — Safety & Security', status: simActive ? 'warning' : 'online', primaryMetric: { label: 'Threat Level', value: simActive ? 3 : 0, unit: '' }, sparkline: sparkline(0, 1), subMetrics: [{ label: 'Cameras Online', value: '48/48' }, { label: 'Perimeter', value: 'Secure' }], alertCount: simActive ? 1 : 0 },
-  { id: 'federate', name: 'FEDERATE', fullName: 'NEXUS FEDERATE — Edge Federation', status: 'online', primaryMetric: { label: 'Nodes Synced', value: 6, unit: '/6' }, sparkline: sparkline(6, 0.5), subMetrics: [{ label: 'Latency', value: '2.1 ms' }, { label: 'Bandwidth', value: '94%' }], alertCount: 0 },
-];
+export const getModules = (simActive = false): ModuleData[] => {
+  const footfall = Math.round(jitter(simActive ? 2743 : 1247, 0.04));
+  const consumption = Math.round(jitter(simActive ? 890 : 456, 0.05));
+  const occupancy = Math.round(jitter(simActive ? 89 : 62, 0.06));
+  return [
+    { id: 'flow', name: 'FLOW', fullName: 'NEXUS FLOW — Smart Mobility', status: simActive ? 'warning' : 'online', primaryMetric: { label: 'Footfall', value: footfall, unit: '/hr' }, sparkline: sparkline(footfall, footfall * 0.2), subMetrics: [{ label: 'Gates Active', value: '4/4' }, { label: 'Shuttle ETA', value: `${Math.round(jitter(3, 0.3))} min` }], alertCount: simActive ? Math.round(jitter(2, 0.4)) : 0 },
+    { id: 'eco', name: 'ECO', fullName: 'NEXUS ECO — Energy Intelligence', status: simActive ? 'alert' : 'online', primaryMetric: { label: 'Consumption', value: consumption, unit: 'kW' }, sparkline: sparkline(consumption, consumption * 0.15), subMetrics: [{ label: 'Solar Output', value: `${Math.round(jitter(124, 0.08))} kW` }, { label: 'Grid Load', value: `${Math.round(jitter(67, 0.06))}%` }], alertCount: simActive ? Math.round(jitter(3, 0.3)) : 0 },
+    { id: 'space', name: 'SPACE', fullName: 'NEXUS SPACE — Spatial Intelligence', status: 'online', primaryMetric: { label: 'Occupancy', value: occupancy, unit: '%' }, sparkline: sparkline(occupancy, 15), subMetrics: [{ label: 'Rooms Available', value: `${Math.round(jitter(12, 0.15))}/30` }, { label: 'Density', value: occupancy > 75 ? 'High' : 'Normal' }], alertCount: 0 },
+    { id: 'maintain', name: 'MAINTAIN', fullName: 'NEXUS MAINTAIN — Predictive Maintenance', status: 'online', primaryMetric: { label: 'Health Score', value: Math.round(jitter(94, 0.02)), unit: '%' }, sparkline: sparkline(94, 5), subMetrics: [{ label: 'Tasks Pending', value: `${Math.round(jitter(3, 0.3))}` }, { label: 'MTBF', value: `${Math.round(jitter(720, 0.03))} hrs` }], alertCount: 0 },
+    { id: 'guard', name: 'GUARD', fullName: 'NEXUS GUARD — Safety & Security', status: simActive ? 'warning' : 'online', primaryMetric: { label: 'Threat Level', value: simActive ? Math.round(jitter(3, 0.3)) : 0, unit: '' }, sparkline: sparkline(simActive ? 3 : 0, 1), subMetrics: [{ label: 'Cameras Online', value: '48/48' }, { label: 'Perimeter', value: 'Secure' }], alertCount: simActive ? 1 : 0 },
+    { id: 'federate', name: 'FEDERATE', fullName: 'NEXUS FEDERATE — Edge Federation', status: 'online', primaryMetric: { label: 'Nodes Synced', value: 6, unit: '/6' }, sparkline: sparkline(6, 0.5), subMetrics: [{ label: 'Latency', value: `${jitter(2.1, 0.1).toFixed(1)} ms` }, { label: 'Bandwidth', value: `${Math.round(jitter(94, 0.03))}%` }], alertCount: 0 },
+  ];
+};
 
 export const getBuildingNodes = (): BuildingNode[] => [
   { id: 'b1', name: 'Main Hall', x: 200, y: 120, status: 'healthy', metrics: [{ label: 'Occupancy', value: '72%' }, { label: 'Temp', value: '22°C' }] },
