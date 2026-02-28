@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useNexus } from '@/contexts/NexusContext';
 import { getModules } from '@/services/mockData';
+
+// ── Helper: distribute total across N buckets exactly ──
+const distributeTotal = (total: number, n: number): number[] => {
+  const weights = Array.from({ length: n }, () => 0.5 + Math.random());
+  const sum = weights.reduce((a, b) => a + b, 0);
+  const raw = weights.map(w => Math.floor((w / sum) * total));
+  let remainder = total - raw.reduce((a, b) => a + b, 0);
+  for (let i = 0; remainder > 0; i = (i + 1) % n, remainder--) raw[i]++;
+  return raw;
+};
+
+// ── Helper: distribute 100% across N buckets exactly ──
+const distributePercent = (n: number): number[] => {
+  const weights = Array.from({ length: n }, () => 5 + Math.random() * 30);
+  const sum = weights.reduce((a, b) => a + b, 0);
+  const raw = weights.map(w => Math.floor((w / sum) * 100));
+  let remainder = 100 - raw.reduce((a, b) => a + b, 0);
+  for (let i = 0; remainder > 0; i = (i + 1) % n, remainder--) raw[i]++;
+  return raw;
+};
 
 // ── Unique visualizations per module ──
 
 const FlowSankey: React.FC<{ sim: boolean }> = ({ sim }) => {
   const zones = ['Gate A', 'Gate B', 'Gate C', 'Gate D'];
   const destinations = ['Main Hall', 'Cafeteria', 'Library', 'Science Block', 'Sports'];
+
+  const totalFootfall = sim ? 2743 : 1247;
+  const gateValues = useMemo(() => distributeTotal(totalFootfall, zones.length), [totalFootfall]);
+  const destPercents = useMemo(() => distributePercent(destinations.length), []);
+
   return (
     <div className="glass-panel p-5">
       <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Flow Matrix — Live Traffic</div>
@@ -20,7 +45,7 @@ const FlowSankey: React.FC<{ sim: boolean }> = ({ sim }) => {
         {/* Sources */}
         {zones.map((z, i) => {
           const y = 40 + i * 55;
-          const flow = sim ? Math.round(200 + Math.random() * 300) : Math.round(50 + Math.random() * 100);
+          const flow = gateValues[i];
           return (
             <g key={z}>
               <rect x={20} y={y - 12} width={80} height={24} fill="hsla(186,100%,50%,0.05)" stroke="hsla(186,100%,50%,0.15)" strokeWidth="0.5" />
@@ -29,8 +54,8 @@ const FlowSankey: React.FC<{ sim: boolean }> = ({ sim }) => {
               {/* Flow lines to destinations */}
               {destinations.map((_, di) => {
                 const ty = 30 + di * 50;
-                const opacity = Math.random() * 0.3 + 0.05;
-                const width = sim ? Math.random() * 3 + 0.5 : Math.random() * 1.5 + 0.3;
+                const opacity = 0.05 + (flow / totalFootfall) * 0.3;
+                const width = sim ? 0.5 + (flow / totalFootfall) * 4 : 0.3 + (flow / totalFootfall) * 2;
                 return (
                   <path key={`${z}-${di}`} d={`M130,${y} C250,${y} 350,${ty} 440,${ty}`}
                     fill="none" stroke="hsla(186,100%,50%,1)" strokeWidth={width} opacity={opacity}
@@ -43,37 +68,42 @@ const FlowSankey: React.FC<{ sim: boolean }> = ({ sim }) => {
         {/* Destinations */}
         {destinations.map((d, i) => {
           const y = 30 + i * 50;
-          const occ = Math.round(Math.random() * 100);
           return (
             <g key={d}>
               <rect x={440} y={y - 12} width={120} height={24} fill="hsla(186,100%,50%,0.03)" stroke="hsla(186,100%,50%,0.1)" strokeWidth="0.5" />
               <text x={500} y={y + 3} textAnchor="middle" fill="hsl(224,100%,97%)" fontSize="8" fontFamily="JetBrains Mono">{d}</text>
-              <text x={570} y={y + 3} fill="hsla(186,100%,50%,0.5)" fontSize="7" fontFamily="JetBrains Mono">{occ}%</text>
+              <text x={570} y={y + 3} fill="hsla(186,100%,50%,0.5)" fontSize="7" fontFamily="JetBrains Mono">{destPercents[i]}%</text>
             </g>
           );
         })}
+        {/* Totals footer */}
+        <text x={300} y={272} textAnchor="middle" fill="hsla(186,100%,50%,0.3)" fontSize="7" fontFamily="JetBrains Mono">
+          TOTAL: {gateValues.reduce((a, b) => a + b, 0)} ≡ {totalFootfall} | ZONES: {destPercents.reduce((a, b) => a + b, 0)}%
+        </text>
       </svg>
     </div>
   );
 };
 
 const SpaceOccupancy: React.FC = () => {
-  const rooms = Array.from({ length: 30 }, (_, i) => ({
+  const rooms = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
     id: i,
     occ: Math.random(),
-  }));
+  })), []);
   return (
     <div className="glass-panel p-5">
       <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Occupancy Matrix — 30 Rooms</div>
-      <div className="grid grid-cols-10 gap-1">
+      <div className="grid grid-cols-10 gap-1.5">
         {rooms.map(r => {
-          const color = r.occ < 0.4 ? 'hsla(186,100%,50%,' : r.occ < 0.7 ? 'hsla(47,91%,53%,' : 'hsla(0,100%,68%,';
+          const isFull = r.occ >= 0.7;
+          const isMedium = r.occ >= 0.4 && r.occ < 0.7;
+          const hue = isFull ? '0,100%,68%' : isMedium ? '47,91%,53%' : '186,100%,50%';
           return (
-            <div key={r.id} className="aspect-square relative group cursor-pointer">
-              <div className="w-full h-full" style={{
-                background: `${color}${0.15 + r.occ * 0.4})`,
-                border: `1px solid ${color}0.3)`,
-                boxShadow: r.occ > 0.7 ? `0 0 8px ${color}0.3)` : 'none',
+            <div key={r.id} className={`aspect-square relative group cursor-pointer ${isFull || isMedium ? 'animate-slow-pulse' : ''}`}>
+              <div className="w-full h-full rounded-sm" style={{
+                background: `hsla(${hue},${0.1 + r.occ * 0.25})`,
+                border: `1px solid hsla(${hue},${0.2 + r.occ * 0.3})`,
+                boxShadow: `inset 0 0 ${8 + r.occ * 12}px hsla(${hue},${0.1 + r.occ * 0.15}), 0 0 ${r.occ > 0.5 ? 12 : 4}px hsla(${hue},${r.occ * 0.15})`,
               }} />
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block font-mono text-[8px] text-foreground bg-background/90 border border-accent/10 px-1.5 py-0.5 whitespace-nowrap z-10">
                 R{r.id + 1}: {Math.round(r.occ * 100)}%
@@ -83,9 +113,9 @@ const SpaceOccupancy: React.FC = () => {
         })}
       </div>
       <div className="flex gap-4 mt-3 text-[9px] font-mono text-muted-foreground">
-        <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background: 'hsla(186,100%,50%,0.3)' }} /> Empty</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background: 'hsla(47,91%,53%,0.4)' }} /> Medium</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2" style={{ background: 'hsla(0,100%,68%,0.5)' }} /> Full</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: 'hsla(186,100%,50%,0.2)', border: '1px solid hsla(186,100%,50%,0.3)', boxShadow: 'inset 0 0 6px hsla(186,100%,50%,0.1)' }} /> Empty</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm animate-slow-pulse" style={{ background: 'hsla(47,91%,53%,0.25)', border: '1px solid hsla(47,91%,53%,0.4)', boxShadow: 'inset 0 0 6px hsla(47,91%,53%,0.15)' }} /> Medium</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm animate-slow-pulse" style={{ background: 'hsla(0,100%,68%,0.3)', border: '1px solid hsla(0,100%,68%,0.5)', boxShadow: 'inset 0 0 6px hsla(0,100%,68%,0.2)' }} /> Full</span>
       </div>
     </div>
   );
@@ -143,27 +173,22 @@ const GuardRadar: React.FC = () => {
       <div className="grid grid-cols-2 gap-2">
         {feeds.map((f) => (
           <div key={f.label} className="relative aspect-video bg-background border border-accent/8 overflow-hidden group">
-            {/* Scan effect */}
             <div className="absolute inset-0" style={{
               background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, hsla(186,100%,50%,0.02) 3px, hsla(186,100%,50%,0.02) 4px)',
             }} />
-            {/* Corner brackets */}
             <div className="absolute top-1 left-1 w-4 h-4 border-t border-l border-accent/30" />
             <div className="absolute top-1 right-1 w-4 h-4 border-t border-r border-accent/30" />
             <div className="absolute bottom-1 left-1 w-4 h-4 border-b border-l border-accent/30" />
             <div className="absolute bottom-1 right-1 w-4 h-4 border-b border-r border-accent/30" />
-            {/* Bounding box on motion */}
             {f.status === 'motion' && (
               <div className="absolute top-1/4 left-1/3 w-1/4 h-1/3 border border-nexus-yellow animate-pulse-glow">
                 <span className="absolute -top-3 left-0 font-mono text-[7px] text-nexus-yellow">MOTION DETECTED</span>
               </div>
             )}
-            {/* Label */}
             <div className="absolute bottom-1.5 left-2 font-mono text-[8px] text-accent/50">{f.label}</div>
             <div className={`absolute top-1.5 right-2 font-mono text-[7px] uppercase ${f.status === 'clear' ? 'text-nexus-green' : 'text-nexus-yellow animate-pulse-glow'}`}>
               {f.status === 'clear' ? '● CLEAR' : '● ALERT'}
             </div>
-            {/* Timestamp */}
             <div className="absolute bottom-1.5 right-2 font-mono text-[7px] text-muted-foreground tabular-nums">
               {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </div>
@@ -200,7 +225,6 @@ const moduleConfig: Record<string, {
     ],
     visualization: ({ sim }) => (
       <div className="space-y-4">
-        {/* Energy bar chart */}
         <div className="glass-panel p-5">
           <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Energy Flow — Real-time</div>
           <svg viewBox="0 0 600 200" className="w-full">
@@ -217,9 +241,7 @@ const moduleConfig: Record<string, {
             <line x1={0} y1={200} x2={600} y2={200} stroke="hsla(186,100%,50%,0.1)" strokeWidth="0.5" />
           </svg>
         </div>
-
         <div className="grid grid-cols-2 gap-4">
-          {/* Smart Bin Topology */}
           <div className="glass-panel p-5">
             <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Smart Bin Topology — Ultrasonic</div>
             <div className="flex items-end justify-between gap-4 h-32">
@@ -231,25 +253,18 @@ const moduleConfig: Record<string, {
               ].map(bin => (
                 <div key={bin.zone} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full h-24 bg-secondary/30 border border-accent/8 relative overflow-hidden">
-                    <div
-                      className="absolute bottom-0 w-full transition-all"
-                      style={{
-                        height: `${bin.fill}%`,
-                        background: bin.fill > 70 ? 'hsla(0,100%,68%,0.4)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)',
-                        borderTop: `1px solid ${bin.fill > 70 ? 'hsla(0,100%,68%,0.6)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.5)' : 'hsla(155,100%,43%,0.5)'}`,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-foreground tabular-nums font-bold">
-                      {bin.fill}%
-                    </div>
+                    <div className="absolute bottom-0 w-full transition-all" style={{
+                      height: `${bin.fill}%`,
+                      background: bin.fill > 70 ? 'hsla(0,100%,68%,0.4)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.3)' : 'hsla(155,100%,43%,0.3)',
+                      borderTop: `1px solid ${bin.fill > 70 ? 'hsla(0,100%,68%,0.6)' : bin.fill > 50 ? 'hsla(47,91%,53%,0.5)' : 'hsla(155,100%,43%,0.5)'}`,
+                    }} />
+                    <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-foreground tabular-nums font-bold">{bin.fill}%</div>
                   </div>
                   <span className="font-mono text-[8px] text-muted-foreground text-center leading-tight">{bin.zone}</span>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Water Consumption / Leak Status */}
           <div className="glass-panel p-5">
             <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Water Consumption / Leak Status</div>
             <div className="space-y-4">
@@ -273,8 +288,7 @@ const moduleConfig: Record<string, {
                   <div className="h-full bg-accent/30 transition-all" style={{ width: '58%' }} />
                 </div>
                 <div className="flex justify-between mt-1 font-mono text-[8px] text-muted-foreground">
-                  <span>0 kL/hr</span>
-                  <span>5 kL/hr</span>
+                  <span>0 kL/hr</span><span>5 kL/hr</span>
                 </div>
               </div>
             </div>
@@ -321,12 +335,10 @@ const moduleConfig: Record<string, {
       <div className="glass-panel p-5">
         <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-4">Node Federation Map</div>
         <svg viewBox="0 0 600 250" className="w-full">
-          {/* Central hub */}
           <circle cx={300} cy={125} r="20" fill="hsla(186,100%,50%,0.05)" stroke="hsla(186,100%,50%,0.3)" strokeWidth="1">
             <animate attributeName="r" values="18;22;18" dur="2s" repeatCount="indefinite" />
           </circle>
           <text x={300} y={128} textAnchor="middle" fill="hsl(186,100%,50%)" fontSize="8" fontFamily="JetBrains Mono">HUB</text>
-          {/* Satellite nodes */}
           {[0, 1, 2, 3, 4, 5].map(i => {
             const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
             const x = 300 + Math.cos(angle) * 100;
@@ -337,7 +349,6 @@ const moduleConfig: Record<string, {
                 <circle cx={x} cy={y} r="8" fill="hsla(186,100%,50%,0.08)" stroke="hsla(186,100%,50%,0.3)" strokeWidth="0.5" />
                 <circle cx={x} cy={y} r="2" fill="hsl(155,100%,43%)" style={{ filter: 'drop-shadow(0 0 4px hsl(155,100%,43%))' }} />
                 <text x={x} y={y + 18} textAnchor="middle" fill="hsla(224,100%,97%,0.4)" fontSize="7" fontFamily="JetBrains Mono">N{i + 1}</text>
-                {/* Data packet animation */}
                 <circle r="1.5" fill="hsl(186,100%,50%)" opacity="0.6">
                   <animateMotion dur={`${1.5 + i * 0.3}s`} repeatCount="indefinite" path={`M${300},${125} L${x},${y}`} />
                 </circle>

@@ -24,9 +24,9 @@ const DashboardSidebar: React.FC<{ collapsed: boolean; onToggle: () => void }> =
   const edge = getEdgeStatus();
 
   return (
-    <aside className={`fixed left-0 top-0 h-screen bg-sidebar border-r border-accent/6 flex flex-col z-30 transition-all duration-200 ${collapsed ? 'w-14' : 'w-56'}`}>
+    <aside className={`fixed left-0 top-0 h-screen bg-sidebar border-r border-white/[0.04] flex flex-col z-30 transition-all duration-200 ${collapsed ? 'w-14' : 'w-56'}`}>
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-3 h-12 border-b border-accent/6 shrink-0">
+      <div className="flex items-center gap-2.5 px-3 h-12 border-b border-white/[0.04] shrink-0">
         <button onClick={onToggle} className="flex items-center gap-2 w-full">
           <NexusLogo size={collapsed ? 24 : 28} />
           {!collapsed && (
@@ -68,7 +68,7 @@ const DashboardSidebar: React.FC<{ collapsed: boolean; onToggle: () => void }> =
 
       {/* Edge Status */}
       {!collapsed && (
-        <div className="mx-2 mb-2 p-2.5 border-t border-accent/6 text-[9px] font-mono">
+        <div className="mx-2 mb-2 p-2.5 border-t border-white/[0.04] text-[9px] font-mono">
           <div className="text-muted-foreground uppercase tracking-[0.15em] mb-2 flex items-center gap-1.5">
             <span className="w-1 h-1 rounded-full bg-nexus-green" style={{ boxShadow: '0 0 4px hsl(155, 100%, 43%)' }} />
             Edge Status

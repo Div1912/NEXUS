@@ -3,8 +3,10 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 interface NexusState {
   simulationActive: boolean;
   presentationMode: boolean;
+  highContrast: boolean;
   toggleSimulation: () => void;
   togglePresentation: () => void;
+  toggleHighContrast: () => void;
 }
 
 const NexusContext = createContext<NexusState | null>(null);
@@ -12,9 +14,16 @@ const NexusContext = createContext<NexusState | null>(null);
 export const NexusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [simulationActive, setSimulationActive] = useState(false);
   const [presentationMode, setPresentationMode] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
 
   const toggleSimulation = useCallback(() => setSimulationActive(p => !p), []);
   const togglePresentation = useCallback(() => setPresentationMode(p => !p), []);
+  const toggleHighContrast = useCallback(() => setHighContrast(p => !p), []);
+
+  // Apply high contrast class to root
+  useEffect(() => {
+    document.documentElement.classList.toggle('high-contrast', highContrast);
+  }, [highContrast]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -29,7 +38,7 @@ export const NexusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [togglePresentation]);
 
   return (
-    <NexusContext.Provider value={{ simulationActive, presentationMode, toggleSimulation, togglePresentation }}>
+    <NexusContext.Provider value={{ simulationActive, presentationMode, highContrast, toggleSimulation, togglePresentation, toggleHighContrast }}>
       {children}
     </NexusContext.Provider>
   );
