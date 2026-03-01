@@ -45,22 +45,89 @@
     --glass-bg: 236 44% 7% / 0.6;
     --glass-border: 186 100% 50% / 0.12;
   }
+
+  /* ── Light Mode overrides ─────────────────────────────── */
+  .light-mode {
+    --background: 210 20% 96%;
+    --foreground: 220 40% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 12%;
+    --primary: 220 80% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 18% 90%;
+    --secondary-foreground: 220 40% 15%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 18% 40%;
+    --accent: 186 80% 38%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 20% 78% / 0.8;
+    --input: 210 20% 92%;
+    --ring: 186 80% 38%;
+
+    --nexus-red: 357 72% 48%;
+    --nexus-cyan: 186 80% 38%;
+    --nexus-green: 155 70% 35%;
+    --nexus-yellow: 40 80% 45%;
+    --nexus-alert: 0 72% 51%;
+    --nexus-dim: 215 18% 56%;
+    --nexus-surface: 210 18% 92%;
+
+    --sidebar-background: 210 22% 92%;
+    --sidebar-foreground: 220 40% 12%;
+    --sidebar-primary: 220 80% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 18% 86%;
+    --sidebar-accent-foreground: 220 40% 12%;
+    --sidebar-border: 215 20% 78% / 0.4;
+    --sidebar-ring: 186 80% 38%;
+
+    --glass-bg: 0 0% 100% / 0.75;
+    --glass-border: 215 20% 70% / 0.5;
+
+    /* Recharts tooltip vars */
+    --tooltip-bg: hsl(0 0% 100%);
+    --tooltip-border: hsla(215, 20%, 70%, 0.8);
+    --tooltip-fg: hsl(220 40% 12%);
+  }
+
+  /* ── Smooth theme transition ──────────────────────────── */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 250ms;
+    transition-timing-function: ease;
+  }
 }
+
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', sans-serif;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Space Grotesk', sans-serif;
   }
+
   .font-display {
     font-family: 'Space Grotesk', sans-serif;
   }
+
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
@@ -86,6 +153,29 @@
     border: 1px solid hsla(186, 100%, 50%, 0.15);
   }
 
+  .glass-deep {
+    background: hsla(236, 44%, 5%, 0.88);
+    backdrop-filter: blur(60px) saturate(1.5);
+    -webkit-backdrop-filter: blur(60px) saturate(1.5);
+    border: 1px solid hsla(186, 100%, 50%, 0.08);
+    box-shadow:
+      0 0 0 1px hsla(186, 100%, 50%, 0.04) inset,
+      0 8px 32px hsla(236, 44%, 2%, 0.5);
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .card-3d:hover {
+    transform: translateY(-4px) rotateX(1.5deg) rotateY(-1deg);
+    box-shadow:
+      0 20px 60px hsla(186, 100%, 50%, 0.08),
+      0 8px 24px hsla(236, 44%, 2%, 0.4),
+      0 0 0 1px hsla(186, 100%, 50%, 0.18) inset;
+  }
+
   .nexus-card {
     background: hsla(var(--glass-bg));
     backdrop-filter: blur(24px);
@@ -94,15 +184,31 @@
     border-radius: var(--radius);
     transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
   }
+
   .nexus-card:hover {
     border-color: hsla(186, 100%, 50%, 0.25);
     transform: translateY(-2px);
     box-shadow: 0 8px 32px hsla(186, 100%, 50%, 0.06);
   }
 
+  .ambient-grid {
+    background-image: radial-gradient(circle, hsla(186, 100%, 50%, 0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .shimmer-text {
+    background: linear-gradient(90deg, hsla(186, 100%, 50%, 0.5) 0%, hsl(186, 100%, 90%) 50%, hsla(186, 100%, 50%, 0.5) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
   .nexus-glow-cyan {
     box-shadow: 0 0 30px hsla(186, 100%, 50%, 0.12), inset 0 0 30px hsla(186, 100%, 50%, 0.03);
   }
+
   .nexus-glow-red {
     box-shadow: 0 0 30px hsla(357, 85%, 52%, 0.15), inset 0 0 30px hsla(357, 85%, 52%, 0.03);
   }
@@ -117,6 +223,7 @@
     position: relative;
     overflow: hidden;
   }
+
   .scan-line::after {
     content: '';
     position: absolute;
@@ -124,80 +231,213 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, hsl(var(--nexus-cyan) / 0.3), transparent);
+    background: linear-gradient(90deg, transparent, hsl(186, 100%, 50% / 0.3), transparent);
     animation: scan-down 4s linear infinite;
+    pointer-events: none;
   }
 
-  @keyframes scan-down {
-    0% { top: 0; }
-    100% { top: 100%; }
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 3px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: hsla(186, 100%, 50%, 0.2);
-    border-radius: 999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: hsla(186, 100%, 50%, 0.4);
-  }
-
-  /* Hide Lovable badge */
-  #lovable-badge {
-    display: none !important;
+  .hex-clip {
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
   }
 
   .interactive-glow {
     transition: box-shadow 0.3s, border-color 0.3s;
   }
+
   .interactive-glow:hover {
     box-shadow: 0 0 16px hsla(186, 100%, 50%, 0.08);
     border-color: hsla(186, 100%, 50%, 0.2);
   }
 
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+  ::-webkit-scrollbar {
+    width: 3px;
   }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsla(186, 100%, 50%, 0.2);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsla(186, 100%, 50%, 0.4);
+  }
+
+  #lovable-badge {
+    display: none !important;
+  }
+
+  @keyframes scan-down {
+    0% {
+      top: 0;
+    }
+
+    100% {
+      top: 100%;
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+  }
+
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
 
   @keyframes dash-flow {
-    to { stroke-dashoffset: -20; }
+    to {
+      stroke-dashoffset: -20;
+    }
   }
+
   .animate-dash-flow {
     animation: dash-flow 2s linear infinite;
   }
 
   @keyframes slow-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.6;
+    }
   }
+
   .animate-slow-pulse {
     animation: slow-pulse 3s ease-in-out infinite;
   }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-rise {
+    animation: rise 0.4s ease-out forwards;
+  }
+
+  @keyframes neon-pulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 6px hsla(186, 100%, 50%, 0.4), 0 0 12px hsla(186, 100%, 50%, 0.2);
+    }
+
+    50% {
+      box-shadow: 0 0 12px hsla(186, 100%, 50%, 0.8), 0 0 30px hsla(186, 100%, 50%, 0.4);
+    }
+  }
+
+  .animate-neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  @keyframes value-pop {
+    0% {
+      transform: translateY(-4px);
+      opacity: 0.6;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-value-pop {
+    animation: value-pop 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  @keyframes typewriter-blink {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .animate-typewriter-blink {
+    animation: typewriter-blink 1s step-end infinite;
+  }
 }
 
-/* High Contrast Mode */
 .high-contrast {
   --border: 186 100% 50% / 0.25;
   --glass-border: 186 100% 50% / 0.3;
   --muted-foreground: 229 24% 68%;
   --sidebar-border: 186 100% 50% / 0.2;
 }
+
 .high-contrast .terminal-text {
   text-shadow: 0 0 12px hsla(186, 100%, 50%, 0.6);
 }
+
 .high-contrast .glass-panel {
   border-color: hsla(186, 100%, 50%, 0.25);
 }
+
 .high-contrast .nexus-card:hover {
   border-color: hsla(186, 100%, 50%, 0.4);
   box-shadow: 0 8px 32px hsla(186, 100%, 50%, 0.12);

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import NeuralMesh from './NeuralMesh';
@@ -6,6 +6,56 @@ import StatCounter from './StatCounter';
 import CampusVisualization from './CampusVisualization';
 import NexusLogo from '@/components/dashboard/NexusLogo';
 import BootSequence from './BootSequence';
+import LandingNav from './LandingNav';
+import { PlatformSection, ModulesSection, ArchitectureSection, ContactSection } from './LandingSections';
+
+// ── Typewriter component: types left→right, holds, erases right→left, loops ──
+const TypewriterText: React.FC<{ text: string; className?: string }> = ({ text, className }) => {
+  const [displayed, setDisplayed] = useState('');
+  const [phase, setPhase] = useState<'typing' | 'holding' | 'erasing'>('typing');
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (phase === 'typing') {
+      if (displayed.length < text.length) {
+        timeout = setTimeout(() => {
+          setDisplayed(text.slice(0, displayed.length + 1));
+        }, 80);
+      } else {
+        // Full text shown — hold before erasing
+        timeout = setTimeout(() => setPhase('holding'), 1800);
+      }
+    } else if (phase === 'holding') {
+      timeout = setTimeout(() => setPhase('erasing'), 0);
+    } else if (phase === 'erasing') {
+      if (displayed.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayed(displayed.slice(0, displayed.length - 1));
+        }, 45);
+      } else {
+        // All erased — pause then start typing again
+        timeout = setTimeout(() => setPhase('typing'), 600);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayed, phase, text]);
+
+  return (
+    <span className={className}>
+      {displayed}
+      <span
+        className="inline-block w-[3px] h-[0.85em] ml-[2px] align-middle"
+        style={{
+          background: 'linear-gradient(135deg, hsl(357, 85%, 52%), hsl(186, 100%, 50%))',
+          animation: 'typewriter-blink 1s step-end infinite',
+          verticalAlign: 'middle',
+        }}
+      />
+    </span>
+  );
+};
 
 const HeroLanding: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +68,7 @@ const HeroLanding: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden">
+      <LandingNav />
       {booting && <BootSequence onComplete={() => navigate('/dashboard')} />}
       {/* HERO SECTION */}
       <div className="relative min-h-screen flex items-center overflow-hidden">
@@ -27,7 +78,7 @@ const HeroLanding: React.FC = () => {
         <div className="absolute top-1/4 left-1/6 w-[700px] h-[700px] rounded-full bg-primary/8 blur-[150px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/6 w-[600px] h-[600px] rounded-full bg-accent/6 blur-[120px] pointer-events-none" />
 
-        <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col lg:flex-row items-center gap-16">
+        <div className="relative z-10 container mx-auto px-6 pt-20 pb-20 flex flex-col lg:flex-row items-center gap-16">
           {/* Left Content */}
           <div className="flex-1 max-w-2xl">
             <motion.div
@@ -48,17 +99,31 @@ const HeroLanding: React.FC = () => {
             >
               The Campus
               <br />
-              That <span className="nexus-gradient-text">Thinks.</span>
+              That{' '}
+              <TypewriterText
+                text="Thinks"
+                className="nexus-gradient-text"
+              />
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-muted-foreground text-base max-w-lg mb-10 leading-relaxed font-mono text-sm"
+              className="max-w-lg mb-10 leading-snug"
             >
-              NEXUS OS is the world's first Causal AI Operating System for campus infrastructure — running entirely at the edge. Zero cloud. Sub-5ms response.
+              <span className="block text-foreground text-lg font-semibold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                Your buildings are smart
+              </span>
+              <span className="block text-foreground text-lg font-semibold mb-3" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                Your infrastructure should be{' '}
+                <span className="nexus-gradient-text">Intelligent</span>
+              </span>
+              <span className="block font-mono text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
+                Edge native AI powering autonomous campus infrastructure
+              </span>
             </motion.p>
+
 
             {/* Stats as telemetry strip */}
             <motion.div
@@ -135,7 +200,7 @@ const HeroLanding: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="bg-background p-8 group hover:bg-secondary/30 transition-colors cursor-pointer"
+                className="bg-background p-8 group hover:bg-secondary/30 transition-colors cursor-pointer card-3d"
                 onClick={() => navigate(`/dashboard/${m.id.toLowerCase()}`)}
               >
                 <div className="font-mono text-[10px] text-accent/50 uppercase tracking-[0.2em] mb-2">NEXUS {m.id}</div>
@@ -147,6 +212,12 @@ const HeroLanding: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* ─ Landing page content sections ─ */}
+      <PlatformSection />
+      <ModulesSection />
+      <ArchitectureSection />
+      <ContactSection />
     </div>
   );
 };
