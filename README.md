@@ -4,7 +4,7 @@ The AI Brain Your Campus Never Had
 Causal AI Campus Operating System
 Built Entirely on AMD Silicon · Zero Cloud · Sub-5ms Response · Campus to City Ready
 
-📌 Overview
+Overview
 
 NEXUS OS is a next-generation Causal AI Operating System for university campuses.
 
@@ -38,7 +38,8 @@ Sensors	1000+
 Cloud Dependencies	0
 ROI Payback	19 months
 PS Exploration Paths	5
-🧠 How NEXUS OS Works
+
+ How NEXUS OS Works
 The Intelligence Loop (Runs Every Second)
 SENSE → THINK → DECIDE → ACT → LEARN → Repeat
 1️⃣ Sense
@@ -61,8 +62,8 @@ Direct API execution (HVAC, shuttles, gates, alerts).
 
 Federated learning improves future decisions.
 
-🏗️ System Architecture
-🧩 Three-Tier Edge Architecture (Zero Cloud)
+System Architecture
+Three-Tier Edge Architecture (Zero Cloud)
 🔹 Layer 1 – Sensor Fabric
 
 Smart Cameras (ONVIF)
@@ -103,8 +104,9 @@ Emergency Alerts
 
 Maintenance Dispatch
 
-🧩 The Six Core Modules
-🚦 NEXUS FLOW – Smart Transport
+ The Six Core Modules
+
+ NEXUS FLOW – Smart Transport
 
 Predicts rush hour
 
@@ -114,7 +116,8 @@ Smart gate control
 
 ↓ 40% congestion
 
-🌱 NEXUS ECO – Energy & Waste
+
+ NEXUS ECO – Energy & Waste
 
 Dynamic HVAC control
 
@@ -124,7 +127,8 @@ Leak detection
 
 ↓ 32% energy bills
 
-🛡️ NEXUS GUARD – Safety
+
+ NEXUS GUARD – Safety
 
 Crowd surge prediction
 
@@ -134,7 +138,8 @@ Multi-channel emergency alerts
 
 61% faster response
 
-🏫 NEXUS SPACE – Space Intelligence
+
+ NEXUS SPACE – Space Intelligence
 
 Real-time occupancy tracking
 
@@ -144,7 +149,8 @@ Auto room booking
 
 ↑ 28% utilization
 
-🔧 NEXUS MAINTAIN – Predictive Maintenance
+
+ NEXUS MAINTAIN – Predictive Maintenance
 
 Failure prediction
 
@@ -217,7 +223,7 @@ Traffic Congestion	-40%
 
 ROI: 19 months
 
-🚀 Installation & Setup
+ Installation & Setup
 Prerequisites
 
 AMD EPYC Server
@@ -282,7 +288,7 @@ nexus-campus/
 ├── docs/
 ├── docker-compose.yml
 └── README.md
-🏙️ Campus → City Roadmap
+Campus → City Roadmap
 
 Phase 1 (2026): 5 Pilot Campuses
 Phase 2 (2027): 100+ Campuses
@@ -301,7 +307,7 @@ Open APIs
 
 Federated Learning
 
-👥 Project Information
+Project Information
 
 Project: NEXUS OS
 Version: 2.4
